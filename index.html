@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chico Lachowski - AI Powered Fan Site</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+         :root {
+            --primary: #1a1a1a;
+            --secondary: #ffd700;
+            --text-light: #f8f9fa;
+            --text-dark: #212529;
+            --bg-light: #ffffff;
+            --bg-dark: #0f0f0f;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+        
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+        /* Navbar */
+        
+        .navbar {
+            background: rgba(26, 26, 26, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(15, 15, 15, 0.98) !important;
+        }
+        
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary) !important;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .nav-link {
+            color: #fff !important;
+            font-weight: 600;
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--secondary);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 80%;
+        }
+        /* Hero Section */
+        
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            animation: pulseGlow 4s infinite;
+        }
+        
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffd700, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        .hero-content p {
+            font-size: 1.3rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        /* Control Panel */
+        
+        .control-panel {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        
+        .control-panel.active {
+            transform: translateY(-50%) translateX(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .control-panel h6 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .theme-btn,
+        .lang-btn,
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            margin: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .theme-btn {
+            background: #ffd700;
+            color: #000;
+        }
+        
+        .theme-btn i {
+            transition: transform 0.3s;
+        }
+        
+        .theme-btn.active i {
+            transform: rotate(180deg);
+        }
+        
+        .lang-btn {
+            background: #333;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .lang-btn.active {
+            background: var(--secondary);
+            color: #000;
+        }
+        
+        .color-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .color-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        
+        .color-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        /* Gallery */
+        
+        .gallery-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            height: 100%;
+        }
+        
+        body.dark-mode .gallery-card {
+            background: #1a1a1a;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .gallery-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+        }
+        
+        .gallery-img {
+            height: 300px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .gallery-card:hover .gallery-img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-info {
+            padding: 1.5rem;
+        }
+        
+        .gallery-info h5 {
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        /* AI Badge */
+        
+        .ai-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            animation: aiPulse 2s infinite;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            z-index: 1001;
+        }
+        /* Animations */
+        
+        @keyframes pulseGlow {
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+        
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+            to {
+                text-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        @keyframes aiPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        /* Particles */
+        
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        /* AI Chat Widget */
+        
+        #aiChatWidget {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 280px;
+            height: 380px;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 15px;
+            border: 1px solid var(--secondary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+        }
+        
+        #aiHeader {
+            background: var(--secondary);
+            color: #000;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+        }
+        
+        #aiMessages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            color: white;
+            font-size: 14px;
+        }
+        
+        #aiInput {
+            border: none;
+            padding: 10px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .ai-msg-user {
+            text-align: right;
+            margin: 5px 0;
+            color: #ffd700;
+        }
+        
+        .ai-msg-bot {
+            text-align: left;
+            margin: 5px 0;
+            color: white;
+        }
+        
+        #aiSend {
+            width: 50px;
+            background: var(--secondary);
+            border: none;
+            color: #000;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        #aiSend:hover {
+            filter: brightness(1.2);
+        }
+        
+        #panelToggle {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: #000;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1001;
+            transition: var(--transition);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+            .control-panel {
+                right: 10px;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="light-mode">
+
+    <!-- Control Panel Toggle Button -->
+    <button id="panelToggle"><i class="fas fa-sliders-h"></i></button>
+
+    <!-- AI Chat Widget -->
+    <div id="aiChatWidget">
+        <div id="aiHeader"><i class="fas fa-robot"></i> Chico AI</div>
+        <div id="aiMessages"></div>
+        <div style="display:flex;">
+            <input id="aiInput" type="text" placeholder="Mənə sual ver..." autocomplete="off">
+            <button id="aiSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <!-- AI Chat Toggle Button -->
+    <button id="aiToggle" style="position: fixed; bottom: 420px; left: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--secondary); color: #000; border: none; font-size: 1.5rem; cursor: pointer; z-index: 1002;">
+    <i class="fas fa-robot"></i>
+</button>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- AI Badge -->
+    <div class="ai-badge">
+        <i class="fas fa-robot"></i> AI POWERED
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">CHICO</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#home">Ana Səhifə</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#bio">Bioqrafiya</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">Qalereya</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Əlaqə</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content" data-aos="zoom-in" data-aos-duration="1000">
+            <h1>Francisco Lachowski</h1>
+            <p>Braziliyalı supermodel • Moda ikonası • Əfsanə</p>
+            <a href="#gallery" class="btn btn-outline-light btn-lg px-5 py-3 mt-3">
+                <i class="fas fa-camera"></i> Şəkillərə Bax
+            </a>
+        </div>
+    </section>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <h6><i class="fas fa-cog"></i> Nəzarət</h6>
+        <div class="d-flex justify-content-center mb-3">
+            <button id="themeToggle" class="theme-btn"><i class="fas fa-moon"></i></button>
+        </div>
+        <h6 class="mt-3"><i class="fas fa-globe"></i> Dil</h6>
+        <div class="d-flex flex-wrap justify-content-center">
+            <button class="lang-btn active" data-lang="az">AZ</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="ru">RU</button>
+        </div>
+        <h6 class="mt-3"><i class="fas fa-palette"></i> Fon</h6>
+        <div class="d-flex flex-wrap justify-content-center">
+            <button class="color-btn" style="background: #ffffff;" data-color="#ffffff"></button>
+            <button class="color-btn" style="background: #f8f9fa;" data-color="#f8f9fa"></button>
+            <button class="color-btn" style="background: #343a40;" data-color="#343a40"></button>
+            <button class="color-btn" style="background: #212529;" data-color="#212529"></button>
+            <button class="color-btn" style="background: #ff6b6b;" data-color="#ff6b6b"></button>
+            <button class="color-btn" style="background: #4ecdc4;" data-color="#4ecdc4"></button>
+            <button class="color-btn" style="background: #ffe66d;" data-color="#ffe66d"></button>
+            <button class="color-btn" style="background: #a8e6cf;" data-color="#a8e6cf"></button>
+            <button class="color-btn" style="background: #6c5ce7;" data-color="#6c5ce7"></button>
+            <button class="color-btn" style="background: #fd79a8;" data-color="#fd79a8"></button>
+            <button class="color-btn" style="background: #00b894;" data-color="#00b894"></button>
+            <button class="color-btn" style="background: #e17055;" data-color="#e17055"></button>
+            <button class="color-btn" style="background: #0984e3;" data-color="#0984e3"></button>
+            <button class="color-btn" style="background: #fdcb6e;" data-color="#fdcb6e"></button>
+            <button class="color-btn" style="background: #e84393;" data-color="#e84393"></button>
+            <button class="color-btn" style="background: #00cec9;" data-color="#00cec9"></button>
+        </div>
+    </div>
+
+    <!-- Bio Section -->
+    <section id="bio" class="container my-5 py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h2 class="display-4 fw-bold mb-4" style="color: var(--secondary);">Bioqrafiya</h2>
+                <p class="lead">Francisco "Chico" Lachowski 13 may 1991-ci ildə Braziliyanın Curitiba şəhərində anadan olub.</p>
+                <p>2008-ci ildə Ford Men's Supermodel of the World müsabiqəsində qalib gələrək karyerasına başlamışdır. Dior, Balmain, Versace, Dolce & Gabbana kimi dünyanın ən böyük moda evləri ilə işləmişdir.</p>
+                <p>Milan, Paris, Nyu York moda həftələrinin daimi üzvüdür. 2 milyondan çox Instagram izləyicisi ilə sosial mediada da fenomendir.</p>
+                <div class="mt-4">
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2 me-2">Supermodel</span>
+                    <span class="badge bg-dark text-warning fs-6 px-3 py-2 me-2">Fashion Icon</span>
+                    <span class="badge bg-secondary text-white fs-6 px-3 py-2">Brazilian</span>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center" data-aos="fade-left">
+                <img src="https://wwd.com/wp-content/uploads/2025/01/model-francisco-lachowski-1.jpg" class="img-fluid rounded-circle shadow-lg" style="width: 400px; height: 400px; object-fit: cover; border: 8px solid var(--secondary);">
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="container-fluid py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <h2 class="text-center text-white display-4 fw-bold mb-5" data-aos="zoom-in">Qalereya</h2>
+            <div class="row g-4"></div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Panel Toggle
+        const panel = document.querySelector('.control-panel');
+        document.getElementById('panelToggle').addEventListener('click', () => {
+            panel.classList.toggle('active');
+        });
+
+        // Theme Toggle
+        const aiWidget = document.getElementById('aiChatWidget');
+        const aiToggle = document.getElementById('aiToggle');
+
+        aiToggle.addEventListener('click', () => {
+            aiWidget.classList.toggle('d-none');
+        });
+
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const moonIcon = themeToggle.querySelector('i');
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                moonIcon.className = 'fas fa-sun';
+                themeToggle.classList.add('active');
+            } else {
+                moonIcon.className = 'fas fa-moon';
+                themeToggle.classList.remove('active');
+            }
+        });
+
+        // Language System
+        const translations = {
+            az: {
+                home: "Ana Səhifə",
+                bio: "Bioqrafiya",
+                gallery: "Qalereya",
+                contact: "Əlaqə",
+                heroTitle: "Francisco Lachowski",
+                heroSubtitle: "Braziliyalı supermodel • Moda ikonası • Əfsanə",
+                viewPhotos: "Şəkillərə Bax",
+                biography: "Bioqrafiya",
+                bioText1: "Francisco \"Chico\" Lachowski 13 may 1991-ci ildə Braziliyanın Curitiba şəhərində anadan olub.",
+                bioText2: "2008-ci ildə Ford Men's Supermodel of the World müsabiqəsində qalib gələrək karyerasına başlamışdır.",
+                bioText3: "Milan, Paris, Nyu York moda həftələrinin daimi üzvüdür."
+            },
+            en: {
+                home: "Home",
+                bio: "Biography",
+                gallery: "Gallery",
+                contact: "Contact",
+                heroTitle: "Francisco Lachowski",
+                heroSubtitle: "Brazilian Supermodel • Fashion Icon • Legend",
+                viewPhotos: "View Photos",
+                biography: "Biography",
+                bioText1: "Francisco \"Chico\" Lachowski was born on May 13, 1991 in Curitiba, Brazil.",
+                bioText2: "He started his career by winning Ford Men's Supermodel of the World in 2008.",
+                bioText3: "Regular face of Milan, Paris, and New York fashion weeks."
+            },
+            ru: {
+                home: "Главная",
+                bio: "Биография",
+                gallery: "Галерея",
+                contact: "Контакты",
+                heroTitle: "Франсиско Лачовски",
+                heroSubtitle: "Бразильская супермодель • Икона моды • Легенда",
+                viewPhotos: "Посмотреть фото",
+                biography: "Биография",
+                bioText1: "Франсиско \"Чико\" Лачовски родился 13 мая 1991 года в Куритибе, Бразилия.",
+                bioText2: "Начал карьеру, выиграв Ford Men's Supermodel of the World в 2008 году.",
+                bioText3: "Постоянный участник недель моды в Милане, Париже и Нью-Йорке."
+            }
+        };
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.dataset.lang;
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const t = translations[lang];
+                document.querySelectorAll('.nav-link').forEach((link, i) => {
+                    const keys = ['home', 'bio', 'gallery', 'contact'];
+                    link.textContent = t[keys[i]];
+                });
+
+                document.querySelector('.hero-content h1').textContent = t.heroTitle;
+                document.querySelector('.hero-content p').textContent = t.heroSubtitle;
+                document.querySelector('.hero-content a').innerHTML = `<i class="fas fa-camera"></i> ${t.viewPhotos}`;
+                document.querySelector('#bio h2').textContent = t.biography;
+                const ps = document.querySelectorAll('#bio p');
+                ps[0].textContent = t.bioText1;
+                ps[1].textContent = t.bioText2;
+                ps[2].textContent = t.bioText3;
+            });
+        });
+
+        // Background Colors
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const color = btn.dataset.color;
+                document.body.style.background = color;
+                document.getElementById('particles-js').style.background = color;
+            });
+        });
+
+        // Gallery
+        const galleryImages = [{
+            src: "https://wwd.com/wp-content/uploads/2025/01/model-francisco-lachowski-1.jpg",
+            title: "Runway 2025",
+            desc: "Paris Fashion Week"
+        }, {
+            src: "https://www.thefashionisto.com/wp-content/uploads/2023/08/Francisco-Lachowski-Numero-Netherlands-2023-750x420.jpg",
+            title: "Beach Editorial",
+            desc: "Numero Netherlands 2023"
+        }, {
+            src: "https://i.pinimg.com/736x/b2/25/a4/b225a4092baaaeee23da22eb8ec2837c.jpg",
+            title: "L'Oréal Paris",
+            desc: "Black leather elegance"
+        }, {
+            src: "https://i.ytimg.com/vi/0xn7wIFMUUg/maxresdefault.jpg",
+            title: "Ermanno Scervino",
+            desc: "Milan Fashion Week 2012"
+        }, {
+            src: "https://64.media.tumblr.com/tumblr_l64dslmhna1qauhoxo1_250.jpg",
+            title: "Marley Kate",
+            desc: "Portrait session"
+        }, {
+            src: "https://www.malemodelscene.net/wp-content/uploads/2018/12/Francisco-Lachowski-GQ-Portugal-Branislav-Simoncik-00.jpg",
+            title: "GQ Portugal",
+            desc: "Editorial 2018"
+        }, {
+            src: "https://www.thefashionisto.com/wp-content/uploads/2021/12/Francisco-Lachowski-2021-LOfficiel-Liechtenstein-010-450x334.jpg",
+            title: "L'Officiel",
+            desc: "Liechtenstein 2021"
+        }, {
+            src: "http://fuckingyoung.es/wp-content/uploads/2018/07/Chico-Lachowski_FYoung_fy1.jpg",
+            title: "Fucking Young",
+            desc: "Magazine shoot 2018"
+        }];
+
+        const galleryRow = document.querySelector('#gallery .row');
+        galleryImages.forEach((img, i) => {
+            const col = document.createElement('div');
+            col.className = 'col-md-6 col-lg-4';
+            col.setAttribute('data-aos', 'fade-up');
+            col.setAttribute('data-aos-delay', i * 100);
+            col.innerHTML = `
+                <div class="gallery-card">
+                    <img src="${img.src}" class="gallery-img w-100" alt="${img.title}">
+                    <div class="gallery-info">
+                        <h5>${img.title}</h5>
+                        <p class="text-muted">${img.desc}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted"><i class="far fa-calendar"></i> ${new Date().getFullYear()}</small>
+                            <button class="btn btn-outline-warning btn-sm"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            galleryRow.appendChild(col);
+        });
+
+        // Particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#ffd700'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#ffd700',
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'repulse'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    repulse: {
+                        distance: 100,
+                        duration: 0.4
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+
+        // Default Language
+        document.querySelector('.lang-btn[data-lang="az"]').classList.add('active');
+
+        // === YENİ AI CHAT (API-siz, 100% işlək) ===
+        const aiInput = document.getElementById("aiInput");
+        const aiSend = document.getElementById("aiSend");
+        const aiMessages = document.getElementById("aiMessages");
+
+        const chicoFacts = {
+            "salam": "Salam! Chico Lachowski Braziliyanın ən məşhur supermodellərindən biridir!",
+            "kimdir": "Francisco Lachowski, 'Chico' ləqəbi ilə tanınır. 1991-ci ildə Braziliyada anadan olub.",
+            "neçə yaşındadır": "13 may 1991-ci ildə anadan olub. 2025-ci ildə 34 yaşı var.",
+            "harada anadan olub": "Curitiba, Braziliya.",
+            "boyu nə qədərdir": "1.91 sm (6'3\").",
+            "necə karyera qurub": "2008-ci ildə Ford Models müsabiqəsində qalib gəlib. Dior, Versace, D&G ilə işləyib.",
+            "instagram": "Instagram-da 2.1M+ izləyicisi var. @chico_lachowski",
+            "evlidirmi": "Bəli, 2013-cü ildə Jessiann Gravel ilə evlənib. 2 oğlu var: Milo və Laslo.",
+            "uşaqları": "Milo (2013) və Laslo (2016).",
+            "müsabiqə": "2008 Ford Supermodel of the World – qalib!",
+            "moda evləri": "Dior Homme, Versace, Dolce & Gabbana, Balmain, Givenchy, Gucci.",
+            "moda həftələri": "Milan, Paris, Nyu York – daimi üzv.",
+            "ləqəbi": "Chico – dostları belə çağırır.",
+            "gözləri": "Mavi-yaşıl, çox məşhurdur!",
+            "saç rəngi": "Tünd qəhvəyi.",
+            "qalereya": "Qalereya bölməsində ən yaxşı şəkilləri görə bilərsən!",
+            "bio": "Bioqrafiya bölməsində tam məlumat var.",
+            "sən kimsən": "Mən Chico AI – sənin şəxsi fan asistentin!",
+            "nə edə bilərsən": "Chico haqqında suallara cavab verirəm, dil dəyişirəm, fon rəngi seçirəm!",
+            "gecə modu": "Nəzarət panelində ay düyməsinə kliklə!",
+            "dil dəyiş": "Nəzarət panelində AZ, EN, RU seç!",
+            "fon rəngi": "Nəzarət panelində rənglərdən birini seç!",
+            "default": "Chico haqqında daha çox bilmək istəyirsən? Qalereyaya bax və ya bio bölməsini oxu!"
+        };
+
+        function getAIResponse(text) {
+            text = text.toLowerCase().trim();
+            for (let key in chicoFacts) {
+                if (text.includes(key)) return chicoFacts[key];
+            }
+            return chicoFacts["default"];
+        }
+
+        async function sendMessage() {
+            const text = aiInput.value.trim();
+            if (!text) return;
+
+            aiMessages.innerHTML += `<div class="ai-msg-user">${text}</div>`;
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+            aiInput.value = "";
+
+            const loading = document.createElement('div');
+            loading.className = 'ai-msg-bot';
+            loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Düşünürəm...';
+            aiMessages.appendChild(loading);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+
+            await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
+            loading.remove();
+
+            const reply = getAIResponse(text);
+            aiMessages.innerHTML += `<div class="ai-msg-bot">${reply}</div>`;
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+
+        aiSend.addEventListener("click", sendMessage);
+        aiInput.addEventListener("keydown", e => {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+
+</html>
